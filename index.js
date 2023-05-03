@@ -49,13 +49,11 @@ export function of(...values) {
   return from(values)
 }
 
-function from(value) {
+export function from(value) {
+  if (isGeneratorFunction(value)) return value
+
   return function*() {
-    if ('length' in value)
-      typeof value === 'function'
-        ? yield* from(value())
-        : yield* Array.from(value)
-    else yield* (Symbol.iterator in value ? value : { [Symbol.iterator]: () => value })
+    yield* Symbol.iterator in value ? value : Array.from(value)
   }
 }
 
