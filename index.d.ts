@@ -1,7 +1,10 @@
-export interface List<A> extends IterableIterator<A> { }
+export interface List<A> {
+  (): Generator<A, void, unknown>
+}
 
-export function isIterableIterator<T>(value: IterableIterator<T>): true
-export function isIterableIterator<T>(value: unknown): value is IterableIterator<T>
+export function isGeneratorFunction<T>(value: List<T>): true
+export function isGeneratorFunction<const D extends readonly unknown[], A, B, C>(value: (...params: D) => Generator<A, B, C>): true
+export function isGeneratorFunction<const D extends readonly unknown[], A, B, C>(value: unknown): value is (...params: D) => Generator<A, B, C>
 
 export function map<A, B>(callback: (value: A) => B): (source: List<A>) => List<B>
 export function map<A, B>(source: List<A>, callback: (value: A) => B): List<B>
@@ -62,7 +65,7 @@ export function scan<A>(source: List<A>, reducer: (accumulator: A, value: A) => 
 export function scan<A, B>(source: List<A>, accumulator: B, reducer: (accumulator: B, value: A) => B): List<B>
 
 type _of = typeof of
-type _is = typeof isIterableIterator
+type _is = typeof isGeneratorFunction
 type _all = typeof all
 type _any = typeof any
 type _map = typeof map

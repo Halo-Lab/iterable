@@ -1,63 +1,72 @@
+const GeneratorFunction = (function*() { }).constructor
+
+export function isGeneratorFunction(value) {
+  return value instanceof GeneratorFunction
+}
+
 function operator(finish) {
-  return (source, ...params) => isIterableIterator(source)
+  return (source, ...params) => isGeneratorFunction(source)
     ? finish(source, ...params)
     : (anotherSource) => finish(anotherSource, source, ...params)
 }
 
 export const map = operator(
-  function*(source, callback) {
-    for (const value of source) {
-      yield callback(value)
+  (source, callback) =>
+    function*() {
+      for (const value of source()) {
+        yield callback(value)
+      }
     }
-  }
 )
 
 export const chain = operator(
-  function*(source, callback) {
-    for (const value of source) {
-      yield* callback(value)
+  (source, callback) =>
+    function*() {
+      for (const value of source()) {
+        yield* callback(value)
+      }
     }
-  }
 )
 
 export const filter = operator(
-  function*(source, predicate) {
-    for (const value of source) {
-      if (predicate(value)) yield value
+  (source, predicate) =>
+    function*() {
+      for (const value of source()) {
+        if (predicate(value)) yield value
+      }
     }
-  }
 )
 
 export const forEach = operator(
   (source, callback) => {
-    for (const value of source) {
+    for (const value of source()) {
       callback(value)
     }
   }
 )
 
-export function* of(...values) {
-  yield* values
+export function of(...values) {
+  return from(values)
 }
 
-export function* from(value) {
-  if ('length' in value)
-    typeof value === 'function'
-      ? yield* from(value())
-      : yield* Array.from(value)
-  else yield* (Symbol.iterator in value ? value : { [Symbol.iterator]: () => value })
-}
-
-export function isIterableIterator(value) {
-  return value && typeof value === 'object' && Symbol.iterator in value && typeof value.next === 'function'
+function from(value) {
+  return function*() {
+    if ('length' in value)
+      typeof value === 'function'
+        ? yield* from(value())
+        : yield* Array.from(value)
+    else yield* (Symbol.iterator in value ? value : { [Symbol.iterator]: () => value })
+  }
 }
 
 export const fold = operator(
   (source, accumulator, reducer) => {
-    if (typeof accumulator === 'function' && reducer === undefined)
-      (reducer = accumulator, accumulator = source.next().value)
+    const iterableIterator = source()
 
-    for (const value of source) {
+    if (typeof accumulator === 'function' && reducer === undefined)
+      (reducer = accumulator, accumulator = iterableIterator.next().value)
+
+    for (const value of iterableIterator) {
       accumulator = reducer(accumulator, value)
     }
 
@@ -66,15 +75,16 @@ export const fold = operator(
 )
 
 export const concat = operator(
-  function*(source, list) {
-    yield* source
-    yield* list
-  }
+  (source, list) =>
+    function*() {
+      yield* source()
+      yield* list()
+    }
 )
 
 export const all = operator(
   (source, predicate) => {
-    for (const item of source) {
+    for (const item of source()) {
       if (!predicate(item)) return false
     }
 
@@ -84,7 +94,7 @@ export const all = operator(
 
 export const any = operator(
   (source, predicate) => {
-    for (const item of source) {
+    for (const item of source()) {
       if (predicate(item)) return true
     }
 
@@ -97,12 +107,13 @@ export const take = operator(
 )
 
 export const takeWhile = operator(
-  function*(source, predicate) {
-    for (const value of source) {
-      if (predicate(value)) yield value
-      else return
+  (source, predicate) =>
+    function*() {
+      for (const value of source()) {
+        if (predicate(value)) yield value
+        else return
+      }
     }
-  }
 )
 
 export const skip = operator(
@@ -118,18 +129,21 @@ export const skipWhile = operator(
   }
 )
 
-export function* enumerate(source) {
-  let index = 0
+export function enumerate(source) {
+  return function*() {
+    let index = 0
 
-  for (const value of source) {
-    yield [value, index++]
+    for (const value of source()) {
+      yield [value, index++]
+    }
   }
 }
 
 export const sort = operator(
-  function*(source, compare) {
-    yield* Array.from(source).sort(compare)
-  }
+  (source, compare) =>
+    function*() {
+      yield* Array.from(source()).sort(compare)
+    }
 )
 
 export function count(source) {
@@ -137,23 +151,25 @@ export function count(source) {
 }
 
 export const scan = operator(
-  function*(source, accumulator, reducer) {
-    if (typeof accumulator === 'function' && reducer === undefined)
-      (reducer = accumulator, accumulator = source.next().value)
+  (source, accumulator, reducer) =>
+    function*() {
+      const iterableIterator = source()
 
-    for (const value of source) {
-      yield accumulator = reducer(accumulator, value)
+      if (typeof accumulator === 'function' && reducer === undefined)
+        (reducer = accumulator, accumulator = iterableIterator.next().value)
+
+      for (const value of iterableIterator) {
+        yield accumulator = reducer(accumulator, value)
+      }
     }
-  }
 )
 
 export default {
   of,
-  is: isIterableIterator,
+  is: isGeneratorFunction,
   all,
   any,
   map,
-  take,
   skip,
   from,
   fold,
