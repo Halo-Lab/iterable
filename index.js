@@ -136,6 +136,17 @@ export function count(source) {
   return fold(source, 0, (amount) => amount + 1)
 }
 
+export const scan = operator(
+  function*(source, accumulator, reducer) {
+    if (typeof accumulator === 'function' && reducer === undefined)
+      (reducer = accumulator, accumulator = source.next().value)
+
+    for (const value of source) {
+      yield accumulator = reducer(accumulator, value)
+    }
+  }
+)
+
 export default {
   of,
   is: isIterableIterator,
@@ -148,6 +159,7 @@ export default {
   fold,
   take,
   sort,
+  scan,
   count,
   chain,
   filter,

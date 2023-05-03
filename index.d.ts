@@ -56,6 +56,11 @@ export function sort<A>(source: List<A>, compare: (first: A, second: A) => numbe
 
 export function count<A>(source: List<A>): number
 
+export function scan<A>(reducer: (accumulator: A, value: A) => A): (source: List<A>) => List<A>
+export function scan<A, B>(accumulator: B, reducer: (accumulator: B, value: A) => B): (source: List<A>) => List<B>
+export function scan<A>(source: List<A>, reducer: (accumulator: A, value: A) => A): List<A>
+export function scan<A, B>(source: List<A>, accumulator: B, reducer: (accumulator: B, value: A) => B): List<B>
+
 type _of = typeof of
 type _is = typeof isIterableIterator
 type _all = typeof all
@@ -64,6 +69,7 @@ type _map = typeof map
 type _take = typeof take
 type _skip = typeof skip
 type _from = typeof from
+type _scan = typeof scan
 type _sort = typeof sort
 type _fold = typeof fold
 type _chain = typeof chain
@@ -87,6 +93,7 @@ declare namespace List {
   export const sort: _sort
   export const skip: _skip
   export const from: _from
+  export const scan: _scan
   export const fold: _fold
   export const chain: _chain
   export const count: _count
