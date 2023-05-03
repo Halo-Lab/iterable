@@ -11,7 +11,8 @@
 	},
 	"keywords": [
 		"List",
-		"Iterator",
+		"Iterable",
+		"Iterator"
 	],
 	"exports": {
 		".": {
