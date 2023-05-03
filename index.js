@@ -164,6 +164,10 @@ export const scan = operator(
     }
 )
 
+export const collect = operator(
+  (source, fromGenerator) => fromGenerator(source())
+)
+
 export default {
   of,
   is: isGeneratorFunction,
@@ -180,6 +184,7 @@ export default {
   chain,
   filter,
   concat,
+  collect,
   forEach,
   takeWhile,
   skipWhile,

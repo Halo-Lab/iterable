@@ -12,7 +12,7 @@ export function map<A, B>(source: List<A>, callback: (value: A) => B): List<B>
 export function chain<A, B>(callback: (value: A) => List<B>): (source: List<A>) => List<B>
 export function chain<A, B>(source: List<A>, callback: (value: A) => List<B>): List<B>
 
-export function filter<A>(predicate: BooleanConstructor): (source: List<A>) => List<Exclude<A, null | undefined | 0 | '' | false>> // except NaN because it has the "number" type
+export function filter(predicate: BooleanConstructor): <A>(source: List<A>) => List<Exclude<A, null | undefined | 0 | '' | false>> // except NaN because it has the "number" type
 export function filter<A, B extends A>(predicate: (value: A) => value is B): (source: List<A>) => List<B>
 export function filter<A>(predicate: (value: A) => boolean): (source: List<A>) => List<A>
 export function filter<A>(source: List<A>, predicate: BooleanConstructor): List<Exclude<A, null | undefined | 0 | '' | false>> // except NaN because it has the "number" type
@@ -27,9 +27,9 @@ export function of<const T extends readonly unknown[]>(...values: T): List<T[num
 export function from<const A>(value: Iterable<A> | ArrayLike<A> | Iterator<A> | (() => Iterable<A> | ArrayLike<A> | Iterator<A>)): List<A>
 
 export function fold<A>(reducer: (accumulator: A, value: A) => A): (source: List<A>) => A
-export function fold<A, B>(accumulator: B, reducer: (accumulator: B, value: A) => B): (source: List<A>) => B
+export function fold<A, const B>(accumulator: B, reducer: (accumulator: B, value: A) => B): (source: List<A>) => B
 export function fold<A>(source: List<A>, reducer: (accumulator: A, value: A) => A): A
-export function fold<A, B>(source: List<A>, accumulator: B, reducer: (accumulator: B, value: A) => B): B
+export function fold<A, const B>(source: List<A>, accumulator: B, reducer: (accumulator: B, value: A) => B): B
 
 export function concat<A>(list: List<A>): (source: List<A>) => List<A>
 export function concat<A>(source: List<A>, list: List<A>): List<A>
@@ -40,10 +40,10 @@ export function all<A>(source: List<A>, predicate: (value: A) => boolean): boole
 export function any<A>(predicate: (value: A) => boolean): (source: List<A>) => boolean
 export function any<A>(source: List<A>, predicate: (value: A) => boolean): boolean
 
-export function take<A>(amount: number): (source: List<A>) => List<A>
+export function take(amount: number): <A>(source: List<A>) => List<A>
 export function take<A>(source: List<A>, amount: number): List<A>
 
-export function skip<A>(amount: number): (source: List<A>) => List<A>
+export function skip(amount: number): <A>(source: List<A>) => List<A>
 export function skip<A>(source: List<A>, amount: number): List<A>
 
 export function takeWhile<A>(predicate: (value: A) => boolean): (source: List<A>) => List<A>
@@ -60,9 +60,14 @@ export function sort<A>(source: List<A>, compare: (first: A, second: A) => numbe
 export function count<A>(source: List<A>): number
 
 export function scan<A>(reducer: (accumulator: A, value: A) => A): (source: List<A>) => List<A>
-export function scan<A, B>(accumulator: B, reducer: (accumulator: B, value: A) => B): (source: List<A>) => List<B>
+export function scan<A, const B>(accumulator: B, reducer: (accumulator: B, value: A) => B): (source: List<A>) => List<B>
 export function scan<A>(source: List<A>, reducer: (accumulator: A, value: A) => A): List<A>
-export function scan<A, B>(source: List<A>, accumulator: B, reducer: (accumulator: B, value: A) => B): List<B>
+export function scan<A, const B>(source: List<A>, accumulator: B, reducer: (accumulator: B, value: A) => B): List<B>
+
+export function collect(fromGenerator: ArrayConstructor['from']): <A>(source: List<A>) => readonly A[]
+export function collect<A, B>(fromGenerator: (generator: ReturnType<List<A>>) => B): (source: List<A>) => B
+export function collect<A>(source: List<A>, fromGenerator: ArrayConstructor['from']): readonly A[]
+export function collect<A, B>(source: List<A>, fromGenerator: (generator: ReturnType<List<A>>) => B): B
 
 type _of = typeof of
 type _is = typeof isGeneratorFunction
@@ -79,6 +84,7 @@ type _chain = typeof chain
 type _count = typeof count
 type _filter = typeof filter
 type _concat = typeof concat
+type _collect = typeof collect
 type _forEach = typeof forEach
 type _takeWhile = typeof takeWhile
 type _skipWhile = typeof skipWhile
@@ -102,6 +108,7 @@ declare namespace List {
   export const count: _count
   export const filter: _filter
   export const concat: _concat
+  export const collect: _collect
   export const forEach: _forEach
   export const takeWhile: _takeWhile
   export const skipWhile: _skipWhile
