@@ -52,16 +52,18 @@ export function isIterableIterator(value) {
   return value && typeof value === 'object' && Symbol.iterator in value && typeof value.next === 'function'
 }
 
-export const fold = operator((source, accumulator, reducer) => {
-  if (typeof accumulator === 'function' && reducer === undefined)
-    (reducer = accumulator, accumulator = source.next().value)
+export const fold = operator(
+  (source, accumulator, reducer) => {
+    if (typeof accumulator === 'function' && reducer === undefined)
+      (reducer = accumulator, accumulator = source.next().value)
 
-  for (const value of source) {
-    accumulator = reducer(accumulator, value)
+    for (const value of source) {
+      accumulator = reducer(accumulator, value)
+    }
+
+    return accumulator
   }
-
-  return accumulator
-})
+)
 
 export const concat = operator(
   function*(source, list) {
@@ -113,7 +115,8 @@ export const skipWhile = operator(
     let skipping = true
 
     return filter(source, (value) => skipping ? !(skipping = predicate(value)) : true)
-  })
+  }
+)
 
 export function* enumerate(source) {
   let index = 0
@@ -122,6 +125,12 @@ export function* enumerate(source) {
     yield [value, index++]
   }
 }
+
+export const sort = operator(
+  function*(source, compare) {
+    yield* Array.from(source).sort(compare)
+  }
+)
 
 export default {
   of,
@@ -134,6 +143,7 @@ export default {
   from,
   fold,
   take,
+  sort,
   chain,
   filter,
   concat,

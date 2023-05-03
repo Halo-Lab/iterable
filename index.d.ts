@@ -51,6 +51,9 @@ export function skipWhile<A>(source: List<A>, predicate: (value: A) => boolean):
 
 export function enumerate<A>(source: List<A>): List<readonly [value: A, index: number]>
 
+export function sort<A>(compare: (first: A, second: A) => number): (source: List<A>) => List<A>
+export function sort<A>(source: List<A>, compare: (first: A, second: A) => number): List<A>
+
 type _of = typeof of
 type _is = typeof isIterableIterator
 type _all = typeof all
@@ -59,6 +62,7 @@ type _map = typeof map
 type _take = typeof take
 type _skip = typeof skip
 type _from = typeof from
+type _sort = typeof sort
 type _fold = typeof fold
 type _chain = typeof chain
 type _filter = typeof filter
@@ -77,6 +81,7 @@ declare namespace List {
   export const any: _any
   export const map: _map
   export const take: _take
+  export const sort: _sort
   export const skip: _skip
   export const from: _from
   export const fold: _fold
