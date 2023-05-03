@@ -132,6 +132,10 @@ export const sort = operator(
   }
 )
 
+export function count(source) {
+  return fold(source, 0, (amount) => amount + 1)
+}
+
 export default {
   of,
   is: isIterableIterator,
@@ -144,6 +148,7 @@ export default {
   fold,
   take,
   sort,
+  count,
   chain,
   filter,
   concat,

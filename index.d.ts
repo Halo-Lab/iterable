@@ -54,6 +54,8 @@ export function enumerate<A>(source: List<A>): List<readonly [value: A, index: n
 export function sort<A>(compare: (first: A, second: A) => number): (source: List<A>) => List<A>
 export function sort<A>(source: List<A>, compare: (first: A, second: A) => number): List<A>
 
+export function count<A>(source: List<A>): number
+
 type _of = typeof of
 type _is = typeof isIterableIterator
 type _all = typeof all
@@ -65,6 +67,7 @@ type _from = typeof from
 type _sort = typeof sort
 type _fold = typeof fold
 type _chain = typeof chain
+type _count = typeof count
 type _filter = typeof filter
 type _concat = typeof concat
 type _forEach = typeof forEach
@@ -86,6 +89,7 @@ declare namespace List {
   export const from: _from
   export const fold: _fold
   export const chain: _chain
+  export const count: _count
   export const filter: _filter
   export const concat: _concat
   export const forEach: _forEach
