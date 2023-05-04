@@ -59,16 +59,18 @@ export function from(value) {
 
 export const fold = operator(
   (source, accumulator, reducer) => {
+    let callback = reducer
+    let intermediate = accumulator
     const iterableIterator = source()
 
-    if (typeof accumulator === 'function' && reducer === undefined)
-      (reducer = accumulator, accumulator = iterableIterator.next().value)
+    if (callback === undefined)
+      (callback = intermediate, intermediate = iterableIterator.next().value)
 
     for (const value of iterableIterator) {
-      accumulator = reducer(accumulator, value)
+      intermediate = callback(intermediate, value)
     }
 
-    return accumulator
+    return intermediate
   }
 )
 
@@ -151,13 +153,15 @@ export function count(source) {
 export const scan = operator(
   (source, accumulator, reducer) =>
     function*() {
+      let callback = reducer
+      let intermediate = accumulator
       const iterableIterator = source()
 
-      if (typeof accumulator === 'function' && reducer === undefined)
-        (reducer = accumulator, accumulator = iterableIterator.next().value)
+      if (callback === undefined)
+        (callback = intermediate, intermediate = iterableIterator.next().value)
 
       for (const value of iterableIterator) {
-        yield accumulator = reducer(accumulator, value)
+        yield intermediate = callback(intermediate, value)
       }
     }
 )
