@@ -69,6 +69,12 @@ export function collect<A, B>(fromGenerator: (generator: ReturnType<List<A>>) =>
 export function collect<A>(source: List<A>, fromGenerator: ArrayConstructor['from']): readonly A[]
 export function collect<A, B>(source: List<A>, fromGenerator: (generator: ReturnType<List<A>>) => B): B
 
+export function first<A>(source: List<A>): A | undefined
+
+export function isEmpty<A>(source: List<A>): boolean
+
+export function last<A>(source: List<A>): A | undefined
+
 type _of = typeof of
 type _is = typeof isGeneratorFunction
 type _all = typeof all
@@ -76,14 +82,17 @@ type _any = typeof any
 type _map = typeof map
 type _take = typeof take
 type _skip = typeof skip
+type _last = typeof last
 type _from = typeof from
 type _scan = typeof scan
 type _sort = typeof sort
 type _fold = typeof fold
 type _chain = typeof chain
 type _count = typeof count
+type _first = typeof first
 type _filter = typeof filter
 type _concat = typeof concat
+type _isEmpty = typeof isEmpty
 type _collect = typeof collect
 type _forEach = typeof forEach
 type _takeWhile = typeof takeWhile
@@ -101,13 +110,16 @@ declare namespace List {
   export const take: _take
   export const sort: _sort
   export const skip: _skip
+  export const last: _last
   export const from: _from
   export const scan: _scan
   export const fold: _fold
   export const chain: _chain
   export const count: _count
+  export const first: _first
   export const filter: _filter
   export const concat: _concat
+  export const isEmpty: _isEmpty
   export const collect: _collect
   export const forEach: _forEach
   export const takeWhile: _takeWhile

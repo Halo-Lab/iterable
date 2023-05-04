@@ -166,6 +166,18 @@ export const collect = operator(
   (source, fromGenerator) => fromGenerator(source())
 )
 
+export function first(source) {
+  return source().next().value
+}
+
+export function isEmpty(source) {
+  return Boolean(source().next().done)
+}
+
+export function last(source) {
+  return fold(source, (_, value) => value)
+}
+
 export default {
   of,
   is: isGeneratorFunction,
@@ -173,15 +185,18 @@ export default {
   any,
   map,
   skip,
+  last,
   from,
   fold,
   take,
   sort,
   scan,
   count,
+  first,
   chain,
   filter,
   concat,
+  isEmpty,
   collect,
   forEach,
   takeWhile,
