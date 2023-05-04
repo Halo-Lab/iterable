@@ -13,35 +13,31 @@ function operator(finish) {
 export const map = operator(
   (source, callback) =>
     function*() {
-      for (const value of source()) {
+      for (const value of source())
         yield callback(value)
-      }
     }
 )
 
 export const chain = operator(
   (source, callback) =>
     function*() {
-      for (const value of source()) {
+      for (const value of source())
         yield* callback(value)
-      }
     }
 )
 
 export const filter = operator(
   (source, predicate) =>
     function*() {
-      for (const value of source()) {
+      for (const value of source())
         if (predicate(value)) yield value
-      }
     }
 )
 
 export const forEach = operator(
   (source, callback) => {
-    for (const value of source()) {
+    for (const value of source())
       callback(value)
-    }
   }
 )
 
@@ -59,16 +55,14 @@ export function from(value) {
 
 export const fold = operator(
   (source, accumulator, reducer) => {
-    let callback = reducer
     let intermediate = accumulator
     const iterableIterator = source()
 
-    if (callback === undefined)
-      (callback = intermediate, intermediate = iterableIterator.next().value)
+    if (reducer === undefined)
+      (reducer = intermediate, intermediate = iterableIterator.next().value)
 
-    for (const value of iterableIterator) {
-      intermediate = callback(intermediate, value)
-    }
+    for (const value of iterableIterator)
+      intermediate = reducer(intermediate, value)
 
     return intermediate
   }
@@ -84,9 +78,8 @@ export const concat = operator(
 
 export const all = operator(
   (source, predicate) => {
-    for (const item of source()) {
+    for (const item of source())
       if (!predicate(item)) return false
-    }
 
     return true
   }
@@ -94,9 +87,8 @@ export const all = operator(
 
 export const any = operator(
   (source, predicate) => {
-    for (const item of source()) {
+    for (const item of source())
       if (predicate(item)) return true
-    }
 
     return false
   }
@@ -133,9 +125,8 @@ export function enumerate(source) {
   return function*() {
     let index = 0
 
-    for (const value of source()) {
+    for (const value of source())
       yield [value, index++]
-    }
   }
 }
 
@@ -153,16 +144,14 @@ export function count(source) {
 export const scan = operator(
   (source, accumulator, reducer) =>
     function*() {
-      let callback = reducer
       let intermediate = accumulator
       const iterableIterator = source()
 
-      if (callback === undefined)
-        (callback = intermediate, intermediate = iterableIterator.next().value)
+      if (reducer === undefined)
+        (reducer = intermediate, yield intermediate = iterableIterator.next().value)
 
-      for (const value of iterableIterator) {
-        yield intermediate = callback(intermediate, value)
-      }
+      for (const value of iterableIterator)
+        yield intermediate = reducer(intermediate, value)
     }
 )
 
