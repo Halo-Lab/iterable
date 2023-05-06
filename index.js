@@ -1,9 +1,3 @@
-const GeneratorFunction = (function*() { }).constructor
-
-function isGeneratorFunction(value) {
-  return value instanceof GeneratorFunction
-}
-
 function operator(finish, minimalArity = finish.length - 1) {
   return (source, ...params) => params.length >= minimalArity
     ? finish(source, ...params)
@@ -46,7 +40,7 @@ export function of(...values) {
 }
 
 export function from(value) {
-  if (isGeneratorFunction(value)) return value
+  if (typeof value === 'function') return value
 
   if (!(Symbol.iterator in value)) value = Array.from(value)
 

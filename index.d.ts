@@ -1,5 +1,5 @@
 export interface List<A> {
-  (): Generator<A, void, unknown>
+  (): Iterator<A, void, unknown>
 }
 
 export function map<A, B>(callback: (value: A) => B): (source: List<A>) => List<B>
