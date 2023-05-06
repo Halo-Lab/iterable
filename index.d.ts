@@ -74,6 +74,11 @@ export function last<A>(source: List<A>): A | undefined
 export function zip<B>(other: List<B>): <A>(source: List<A>) => List<readonly [A, B]>
 export function zip<A, B>(source: List<A>, other: List<B>): List<readonly [A, B]>
 
+export function find<A, B extends A>(predicate: (value: A) => value is B): (source: List<A>) => B | undefined
+export function find<A>(predicate: (value: A) => boolean): (source: List<A>) => A | undefined
+export function find<A, B extends A>(source: List<A>, predicate: (value: A) => value is B): B | undefined
+export function find<A>(source: List<A>, predicate: (value: A) => boolean): A | undefined
+
 type _of = typeof of
 type _all = typeof all
 type _any = typeof any
@@ -86,6 +91,7 @@ type _from = typeof from
 type _scan = typeof scan
 type _sort = typeof sort
 type _fold = typeof fold
+type _find = typeof find
 type _chain = typeof chain
 type _count = typeof count
 type _first = typeof first
@@ -113,6 +119,7 @@ declare namespace List {
   export const from: _from
   export const scan: _scan
   export const fold: _fold
+  export const find: _find
   export const chain: _chain
   export const count: _count
   export const first: _first

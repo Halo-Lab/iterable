@@ -188,6 +188,13 @@ export const zip = operator(
     }
 )
 
+export const find = operator(
+  (source, predicate) => {
+    for (const item of source())
+      if (predicate(item)) return item
+  }
+)
+
 export default {
   of,
   all,
@@ -198,6 +205,7 @@ export default {
   last,
   from,
   fold,
+  find,
   take,
   sort,
   scan,
