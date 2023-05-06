@@ -2,10 +2,6 @@ export interface List<A> {
   (): Generator<A, void, unknown>
 }
 
-export function isGeneratorFunction<T>(value: List<T>): true
-export function isGeneratorFunction<const D extends readonly unknown[], A, B, C>(value: (...params: D) => Generator<A, B, C>): true
-export function isGeneratorFunction<const D extends readonly unknown[], A, B, C>(value: unknown): value is (...params: D) => Generator<A, B, C>
-
 export function map<A, B>(callback: (value: A) => B): (source: List<A>) => List<B>
 export function map<A, B>(source: List<A>, callback: (value: A) => B): List<B>
 
@@ -75,10 +71,13 @@ export function isEmpty<A>(source: List<A>): boolean
 
 export function last<A>(source: List<A>): A | undefined
 
+export function zip<B>(other: List<B>): <A>(source: List<A>) => List<readonly [A, B]>
+export function zip<A, B>(source: List<A>, other: List<B>): List<readonly [A, B]>
+
 type _of = typeof of
-type _is = typeof isGeneratorFunction
 type _all = typeof all
 type _any = typeof any
+type _zip = typeof zip
 type _map = typeof map
 type _take = typeof take
 type _skip = typeof skip
@@ -103,9 +102,9 @@ declare namespace List {
   export type Self<A> = List<A>
 
   export const of: _of
-  export const is: _is
   export const all: _all
   export const any: _any
+  export const zip: _zip
   export const map: _map
   export const take: _take
   export const sort: _sort

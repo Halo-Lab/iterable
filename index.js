@@ -1,11 +1,11 @@
 const GeneratorFunction = (function*() { }).constructor
 
-export function isGeneratorFunction(value) {
+function isGeneratorFunction(value) {
   return value instanceof GeneratorFunction
 }
 
-function operator(finish) {
-  return (source, ...params) => isGeneratorFunction(source)
+function operator(finish, minimalArity = finish.length - 1) {
+  return (source, ...params) => params.length >= minimalArity
     ? finish(source, ...params)
     : (anotherSource) => finish(anotherSource, source, ...params)
 }
@@ -48,24 +48,27 @@ export function of(...values) {
 export function from(value) {
   if (isGeneratorFunction(value)) return value
 
+  if (!(Symbol.iterator in value)) value = Array.from(value)
+
   return function*() {
-    yield* Symbol.iterator in value ? value : Array.from(value)
+    yield* value
   }
 }
 
 export const fold = operator(
-  (source, accumulator, reducer) => {
+  (source, accumulator, reduce) => {
     let intermediate = accumulator
     const iterableIterator = source()
 
-    if (reducer === undefined)
-      (reducer = intermediate, intermediate = iterableIterator.next().value)
+    if (reduce === undefined)
+      (reduce = intermediate, intermediate = iterableIterator.next().value)
 
     for (const value of iterableIterator)
-      intermediate = reducer(intermediate, value)
+      intermediate = reduce(intermediate, value)
 
     return intermediate
-  }
+  },
+  1
 )
 
 export const concat = operator(
@@ -142,17 +145,22 @@ export function count(source) {
 }
 
 export const scan = operator(
-  (source, accumulator, reducer) =>
-    function*() {
+  (source, accumulator, reduce) => {
+    if (reduce === undefined)
+      (reduce = accumulator, accumulator = undefined)
+
+    return function*() {
       let intermediate = accumulator
       const iterableIterator = source()
 
-      if (reducer === undefined)
-        (reducer = intermediate, yield intermediate = iterableIterator.next().value)
+      if (intermediate === undefined)
+        yield intermediate = iterableIterator.next().value
 
       for (const value of iterableIterator)
-        yield intermediate = reducer(intermediate, value)
+        yield intermediate = reduce(intermediate, value)
     }
+  },
+  1
 )
 
 export const collect = operator(
@@ -171,10 +179,25 @@ export function last(source) {
   return fold(source, (_, value) => value)
 }
 
+export const zip = operator(
+  (source, other) =>
+    function*() {
+      const otherIterator = other()
+
+      for (const item of source()) {
+        const { done, value } = otherIterator.next()
+
+        if (done) return
+
+        yield [item, value]
+      }
+    }
+)
+
 export default {
   of,
-  is: isGeneratorFunction,
   all,
+  zip,
   any,
   map,
   skip,
