@@ -1,6 +1,10 @@
 export interface List<A> {
   (): Iterator<A, void, unknown>
+  readonly '@@list': List<A>
 }
+
+export function isList<A>(value: List<A>): true
+export function isList<A>(value: unknown): value is List<A>
 
 export function map<A, B>(callback: (value: A) => B): (source: List<A>) => List<B>
 export function map<A, B>(source: List<A>, callback: (value: A) => B): List<B>
@@ -80,6 +84,7 @@ export function find<A, B extends A>(source: List<A>, predicate: (value: A) => v
 export function find<A>(source: List<A>, predicate: (value: A) => boolean): A | undefined
 
 type _of = typeof of
+type _is = typeof isList
 type _all = typeof all
 type _any = typeof any
 type _zip = typeof zip
@@ -108,6 +113,7 @@ declare namespace List {
   export type Self<A> = List<A>
 
   export const of: _of
+  export const is: _is
   export const all: _all
   export const any: _any
   export const zip: _zip

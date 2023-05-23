@@ -1,31 +1,37 @@
-function operator(finish, minimalArity = finish.length - 1) {
-  return (source, ...params) => params.length >= minimalArity
+const LIST = '@@list'
+
+function operator(finish) {
+  return (source, ...params) => isList(source)
     ? finish(source, ...params)
     : (anotherSource) => finish(anotherSource, source, ...params)
 }
 
+export function isList(value) {
+  return typeof value === 'function' && value === value[LIST]
+}
+
 export const map = operator(
   (source, callback) =>
-    function*() {
+    from(function*() {
       for (const value of source())
         yield callback(value)
-    }
+    })
 )
 
 export const chain = operator(
   (source, callback) =>
-    function*() {
+    from(function*() {
       for (const value of source())
         yield* callback(value)
-    }
+    })
 )
 
 export const filter = operator(
   (source, predicate) =>
-    function*() {
+    from(function*() {
       for (const value of source())
         if (predicate(value)) yield value
-    }
+    })
 )
 
 export const forEach = operator(
@@ -40,13 +46,17 @@ export function of(...values) {
 }
 
 export function from(value) {
-  if (typeof value === 'function') return value
+  if (typeof value === 'function') {
+    value[LIST] = value
+
+    return value
+  }
 
   if (!(Symbol.iterator in value)) value = Array.from(value)
 
-  return function*() {
+  return from(function*() {
     yield* value
-  }
+  })
 }
 
 export const fold = operator(
@@ -61,16 +71,15 @@ export const fold = operator(
       intermediate = reduce(intermediate, value)
 
     return intermediate
-  },
-  1
+  }
 )
 
 export const concat = operator(
   (source, list) =>
-    function*() {
+    from(function*() {
       yield* source()
       yield* list()
-    }
+    })
 )
 
 export const all = operator(
@@ -97,12 +106,12 @@ export const take = operator(
 
 export const takeWhile = operator(
   (source, predicate) =>
-    function*() {
+    from(function*() {
       for (const value of source()) {
         if (predicate(value)) yield value
         else return
       }
-    }
+    })
 )
 
 export const skip = operator(
@@ -119,19 +128,19 @@ export const skipWhile = operator(
 )
 
 export function enumerate(source) {
-  return function*() {
+  return from(function*() {
     let index = 0
 
     for (const value of source())
       yield [value, index++]
-  }
+  })
 }
 
 export const sort = operator(
   (source, compare) =>
-    function*() {
+    from(function*() {
       yield* Array.from(source()).sort(compare)
-    }
+    })
 )
 
 export function count(source) {
@@ -143,7 +152,7 @@ export const scan = operator(
     if (reduce === undefined)
       (reduce = accumulator, accumulator = undefined)
 
-    return function*() {
+    return from(function*() {
       let intermediate = accumulator
       const iterableIterator = source()
 
@@ -152,13 +161,12 @@ export const scan = operator(
 
       for (const value of iterableIterator)
         yield intermediate = reduce(intermediate, value)
-    }
-  },
-  1
+    })
+  }
 )
 
 export const collect = operator(
-  (source, fromGenerator) => fromGenerator(source())
+  (source, fromIterator) => fromIterator(source())
 )
 
 export function first(source) {
@@ -175,7 +183,7 @@ export function last(source) {
 
 export const zip = operator(
   (source, other) =>
-    function*() {
+    from(function*() {
       const otherIterator = other()
 
       for (const item of source()) {
@@ -185,7 +193,7 @@ export const zip = operator(
 
         yield [item, value]
       }
-    }
+    })
 )
 
 export const find = operator(
@@ -197,6 +205,7 @@ export const find = operator(
 
 export default {
   of,
+  is: isList,
   all,
   zip,
   any,
