@@ -1,6 +1,6 @@
 export interface List<A> {
   (): Iterator<A, void, unknown>
-  readonly '@@list': List<A>
+  readonly [Symbol.iterator]: List<A>
 }
 
 export function isList<A>(value: List<A>): true
@@ -64,11 +64,6 @@ export function scan<A, const B>(accumulator: B, reducer: (accumulator: B, value
 export function scan<A>(source: List<A>, reducer: (accumulator: A, value: A) => A): List<A>
 export function scan<A, const B>(source: List<A>, accumulator: B, reducer: (accumulator: B, value: A) => B): List<B>
 
-export function collect(fromGenerator: ArrayConstructor['from']): <A>(source: List<A>) => readonly A[]
-export function collect<A, B>(fromGenerator: (generator: ReturnType<List<A>>) => B): (source: List<A>) => B
-export function collect<A>(source: List<A>, fromGenerator: ArrayConstructor['from']): readonly A[]
-export function collect<A, B>(source: List<A>, fromGenerator: (generator: ReturnType<List<A>>) => B): B
-
 export function first<A>(source: List<A>): A | undefined
 
 export function isEmpty<A>(source: List<A>): boolean
@@ -103,7 +98,6 @@ type _first = typeof first
 type _filter = typeof filter
 type _concat = typeof concat
 type _isEmpty = typeof isEmpty
-type _collect = typeof collect
 type _forEach = typeof forEach
 type _takeWhile = typeof takeWhile
 type _skipWhile = typeof skipWhile
@@ -132,7 +126,6 @@ declare namespace List {
   export const filter: _filter
   export const concat: _concat
   export const isEmpty: _isEmpty
-  export const collect: _collect
   export const forEach: _forEach
   export const takeWhile: _takeWhile
   export const skipWhile: _skipWhile

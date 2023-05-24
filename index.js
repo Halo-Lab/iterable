@@ -1,5 +1,3 @@
-const LIST = '@@list'
-
 function operator(finish) {
   return (source, ...params) => isList(source)
     ? finish(source, ...params)
@@ -7,13 +5,13 @@ function operator(finish) {
 }
 
 export function isList(value) {
-  return typeof value === 'function' && value === value[LIST]
+  return typeof value === 'function' && Symbol.iterator in value
 }
 
 export const map = operator(
   (source, callback) =>
     from(function*() {
-      for (const value of source())
+      for (const value of source)
         yield callback(value)
     })
 )
@@ -21,7 +19,7 @@ export const map = operator(
 export const chain = operator(
   (source, callback) =>
     from(function*() {
-      for (const value of source())
+      for (const value of source)
         yield* callback(value)
     })
 )
@@ -29,14 +27,14 @@ export const chain = operator(
 export const filter = operator(
   (source, predicate) =>
     from(function*() {
-      for (const value of source())
+      for (const value of source)
         if (predicate(value)) yield value
     })
 )
 
 export const forEach = operator(
   (source, callback) => {
-    for (const value of source())
+    for (const value of source)
       callback(value)
   }
 )
@@ -47,7 +45,7 @@ export function of(...values) {
 
 export function from(value) {
   if (typeof value === 'function') {
-    value[LIST] = value
+    value[Symbol.iterator] = value
 
     return value
   }
@@ -77,14 +75,14 @@ export const fold = operator(
 export const concat = operator(
   (source, list) =>
     from(function*() {
-      yield* source()
-      yield* list()
+      yield* source
+      yield* list
     })
 )
 
 export const all = operator(
   (source, predicate) => {
-    for (const item of source())
+    for (const item of source)
       if (!predicate(item)) return false
 
     return true
@@ -93,7 +91,7 @@ export const all = operator(
 
 export const any = operator(
   (source, predicate) => {
-    for (const item of source())
+    for (const item of source)
       if (predicate(item)) return true
 
     return false
@@ -107,7 +105,7 @@ export const take = operator(
 export const takeWhile = operator(
   (source, predicate) =>
     from(function*() {
-      for (const value of source()) {
+      for (const value of source) {
         if (predicate(value)) yield value
         else return
       }
@@ -131,7 +129,7 @@ export function enumerate(source) {
   return from(function*() {
     let index = 0
 
-    for (const value of source())
+    for (const value of source)
       yield [value, index++]
   })
 }
@@ -139,7 +137,7 @@ export function enumerate(source) {
 export const sort = operator(
   (source, compare) =>
     from(function*() {
-      yield* Array.from(source()).sort(compare)
+      yield* Array.from(source).sort(compare)
     })
 )
 
@@ -165,10 +163,6 @@ export const scan = operator(
   }
 )
 
-export const collect = operator(
-  (source, fromIterator) => fromIterator(source())
-)
-
 export function first(source) {
   return source().next().value
 }
@@ -186,7 +180,7 @@ export const zip = operator(
     from(function*() {
       const otherIterator = other()
 
-      for (const item of source()) {
+      for (const item of source) {
         const { done, value } = otherIterator.next()
 
         if (done) return
@@ -198,7 +192,7 @@ export const zip = operator(
 
 export const find = operator(
   (source, predicate) => {
-    for (const item of source())
+    for (const item of source)
       if (predicate(item)) return item
   }
 )
@@ -224,7 +218,6 @@ export default {
   filter,
   concat,
   isEmpty,
-  collect,
   forEach,
   takeWhile,
   skipWhile,
