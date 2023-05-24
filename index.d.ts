@@ -24,7 +24,7 @@ export function forEach<A>(source: List<A>, callback: (value: A) => void): void
 
 export function of<const T extends readonly unknown[]>(...values: T): List<T[number]>
 
-export function from<const A>(value: List<A> | Iterable<A> | ArrayLike<A>): List<A>
+export function from<const A>(value: (() => Iterator<A, void, unknown>) | Iterable<A> | ArrayLike<A>): List<A>
 
 export function fold<A>(reducer: (accumulator: A, value: A) => A): (source: List<A>) => A
 export function fold<A, const B>(accumulator: B, reducer: (accumulator: B, value: A) => B): (source: List<A>) => B
