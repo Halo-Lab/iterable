@@ -1,36 +1,36 @@
 {
-	"name": "@halo-lab/list",
-	"type": "module",
-	"author": "Kapelianovych Yevhen",
-	"version": "0.0.1",
-	"license": "ISC",
-	"description": "A lazy Iterator",
-	"repository": {
-		"url": "https://github.com/Halo-Lab/list",
-		"type": "git"
-	},
-	"keywords": [
-		"List",
-		"Iterable",
-		"Iterator"
-	],
-	"exports": {
-		".": {
-			"types": "./index.d.ts",
-			"default": "./index.js"
-		}
-	},
-	"files": [
-		"LICENSE",
-		"README.md",
-		"index.d.ts",
-		"index.js",
-		"package.json"
-	],
-	"scripts": {
-		"test": "node --loader ts-node/esm --test index.test.ts"
-	},
-	"devDependencies": {
-		"ts-node": "^10.9.1"
-	}
+  "name": "@halo-lab/list",
+  "type": "module",
+  "author": "Kapelianovych Yevhen",
+  "version": "0.0.1",
+  "license": "ISC",
+  "description": "A lazy Iterator",
+  "repository": {
+    "url": "https://github.com/Halo-Lab/list",
+    "type": "git"
+  },
+  "keywords": [
+    "List",
+    "Iterable",
+    "Iterator"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.d.ts",
+    "index.js",
+    "package.json"
+  ],
+  "scripts": {
+    "test": "node --loader ts-node/esm --test index.test.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
 }
