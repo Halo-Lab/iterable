@@ -71,8 +71,8 @@ export function fold<A, const B>(
   reducer: (accumulator: B, value: A) => B
 ): B
 
-export function concat<A>(list: List<A>): (source: List<A>) => List<A>
-export function concat<A>(source: List<A>, list: List<A>): List<A>
+export function concat<A>(list: Iterable<A>): (source: List<A>) => List<A>
+export function concat<A>(source: List<A>, list: Iterable<A>): List<A>
 
 export function all<A>(
   predicate: (value: A) => boolean
