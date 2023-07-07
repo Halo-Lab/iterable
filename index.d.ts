@@ -172,6 +172,14 @@ export function find<A>(
   predicate: (value: A) => boolean,
 ): A | undefined;
 
+export function group<A, B>(
+  callback: (value: A) => B,
+): (source: List<A>) => List<readonly [B, List<A>]>;
+export function group<A, B>(
+  source: List<A>,
+  callback: (value: A) => B,
+): List<readonly [B, List<A>]>;
+
 type _of = typeof of;
 type _is = typeof isList;
 type _all = typeof all;
@@ -186,6 +194,7 @@ type _scan = typeof scan;
 type _sort = typeof sort;
 type _fold = typeof fold;
 type _find = typeof find;
+type _group = typeof group;
 type _chain = typeof chain;
 type _count = typeof count;
 type _first = typeof first;
@@ -214,6 +223,7 @@ declare namespace List {
   export const scan: _scan;
   export const fold: _fold;
   export const find: _find;
+  export const group: _group;
   export const chain: _chain;
   export const count: _count;
   export const first: _first;

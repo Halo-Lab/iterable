@@ -198,6 +198,23 @@ export function find(source, predicate) {
   } else return (anotherSource) => find(anotherSource, source);
 }
 
+export function group(source, callback) {
+  return callback
+    ? from(function* () {
+        const groups = fold(source, {}, (accumulator, value) => {
+          const key = callback(value);
+
+          return {
+            ...accumulator,
+            [key]: concat(accumulator[key] ?? of(), of(value)),
+          };
+        });
+
+        for (const property in groups) yield [property, groups[property]];
+      })
+    : (anotherSource) => group(anotherSource, source);
+}
+
 export default {
   of,
   is: isList,
@@ -214,6 +231,7 @@ export default {
   sort,
   scan,
   count,
+  group,
   first,
   chain,
   filter,
