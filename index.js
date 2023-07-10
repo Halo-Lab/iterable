@@ -201,16 +201,15 @@ export function find(source, predicate) {
 export function group(source, callback) {
   return callback
     ? from(function* () {
-        const groups = fold(source, {}, (accumulator, value) => {
+        const groups = new Map();
+
+        forEach(source, (value) => {
           const key = callback(value);
 
-          return {
-            ...accumulator,
-            [key]: concat(accumulator[key] ?? of(), of(value)),
-          };
+          groups.set(key, concat(groups.get(key) ?? of(), of(value)));
         });
 
-        for (const property in groups) yield [property, groups[property]];
+        for (const pair of groups) yield pair;
       })
     : (anotherSource) => group(anotherSource, source);
 }
