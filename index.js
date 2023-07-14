@@ -1,5 +1,5 @@
-export function isList(value) {
-  return typeof value === "function" && Symbol.iterator in value;
+export function isIterable(value) {
+  return value != null && typeof value[Symbol.iterator] === "function";
 }
 
 export function map(source, callback) {
@@ -36,26 +36,22 @@ export function of(...values) {
 }
 
 export function from(value) {
+  if (isIterable(value)) return value;
+
   if (typeof value === "function") return (value[Symbol.iterator] = value);
 
-  if (!(Symbol.iterator in value)) value = Array.from(value);
+  value = Array.from(value);
 
   return from(function* () {
     yield* value;
   });
 }
 
-export function fold(source, accumulator, reduce = accumulator) {
-  if (isList(source)) {
-    let intermediate = accumulator;
-    const iterableIterator = source();
+export function fold(source, accumulator, reduce) {
+  if (arguments.length === 3) {
+    for (const value of source) accumulator = reduce(accumulator, value);
 
-    if (reduce === intermediate) intermediate = iterableIterator.next().value;
-
-    for (const value of iterableIterator)
-      intermediate = reduce(intermediate, value);
-
-    return intermediate;
+    return accumulator;
   } else return (anotherSource) => fold(anotherSource, source, accumulator);
 }
 
@@ -85,7 +81,7 @@ export function any(source, predicate) {
 }
 
 export function take(source, amount) {
-  if (isList(source)) {
+  if (arguments.length === 2) {
     let _amount = amount;
 
     return takeWhile(
@@ -107,7 +103,7 @@ export function takeWhile(source, predicate) {
 }
 
 export function skip(source, amount) {
-  return isList(source)
+  return arguments.length === 2
     ? from(function* () {
         let _amount = amount;
 
@@ -149,27 +145,23 @@ export function count(source) {
   return fold(source, 0, (amount) => amount + 1);
 }
 
-export function scan(source, accumulator, reduce = accumulator) {
-  return isList(source)
+export function scan(source, accumulator, reduce) {
+  return arguments.length === 3
     ? from(function* () {
         let intermediate = accumulator;
-        const iterableIterator = source();
 
-        if (intermediate === reduce)
-          yield (intermediate = iterableIterator.next().value);
-
-        for (const value of iterableIterator)
+        for (const value of source)
           yield (intermediate = reduce(intermediate, value));
       })
     : (anotherSource) => scan(anotherSource, source, accumulator);
 }
 
 export function first(source) {
-  return source().next().value;
+  return source[Symbol.iterator]().next().value;
 }
 
 export function isEmpty(source) {
-  return Boolean(source().next().done);
+  return Boolean(source[Symbol.iterator]().next().done);
 }
 
 export function last(source) {
@@ -179,7 +171,7 @@ export function last(source) {
 export function zip(source, other) {
   return other
     ? from(function* () {
-        const otherIterator = other();
+        const otherIterator = other[Symbol.iterator]();
 
         for (const item of source) {
           const { done, value } = otherIterator.next();
@@ -190,6 +182,17 @@ export function zip(source, other) {
         }
       })
     : (anotherSource) => zip(anotherSource, source);
+}
+
+export function unzip(source) {
+  return [
+    from(function* () {
+      for (const [first] of source) yield first;
+    }),
+    from(function* () {
+      for (const [, second] of source) yield second;
+    }),
+  ];
 }
 
 export function find(source, predicate) {
@@ -216,7 +219,7 @@ export function group(source, callback) {
 
 export default {
   of,
-  is: isList,
+  is: isIterable,
   all,
   zip,
   any,
@@ -229,6 +232,7 @@ export default {
   take,
   sort,
   scan,
+  unzip,
   count,
   group,
   first,

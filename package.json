@@ -1,16 +1,15 @@
 {
-  "name": "@halo-lab/list",
+  "name": "@halo-lab/iterable",
   "type": "module",
   "author": "Kapelianovych Yevhen",
   "version": "0.0.1",
   "license": "ISC",
-  "description": "A lazy Iterator",
+  "description": "A lazy Iterable",
   "repository": {
-    "url": "https://github.com/Halo-Lab/list",
+    "url": "https://github.com/Halo-Lab/iterable",
     "type": "git"
   },
   "keywords": [
-    "List",
     "Iterable",
     "Iterator"
   ],
