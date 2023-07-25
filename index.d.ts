@@ -49,9 +49,7 @@ export function forEach<A>(
   callback: (value: A) => void,
 ): void;
 
-export function of<const T extends readonly unknown[]>(
-  ...values: T
-): Iterable<T[number]>;
+export function of<T>(...values: readonly T[]): Iterable<T>;
 
 export function from<const A>(
   value: (() => Iterator<A, void, unknown>) | Iterable<A> | ArrayLike<A>,
