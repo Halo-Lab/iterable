@@ -173,6 +173,16 @@ export function unzip<A, B>(
   source: Iterable<readonly [A, B]>,
 ): readonly [Iterable<A>, Iterable<B>];
 
+export function unique(): <A>(source: Iterable<A>) => Iterable<A>;
+export function unique<A>(
+  callback: (item: A) => unknown,
+): (source: Iterable<A>) => Iterable<A>;
+export function unique<A>(source: Iterable<A>): Iterable<A>;
+export function unique<A>(
+  source: Iterable<A>,
+  callback: (item: A) => unknown,
+): Iterable<A>;
+
 type _of = typeof of;
 type _is = typeof isIterable;
 type _all = typeof all;
@@ -194,6 +204,7 @@ type _count = typeof count;
 type _first = typeof first;
 type _filter = typeof filter;
 type _concat = typeof concat;
+type _unique = typeof unique;
 type _isEmpty = typeof isEmpty;
 type _forEach = typeof forEach;
 type _takeWhile = typeof takeWhile;
@@ -224,6 +235,7 @@ declare namespace Iterable {
   export const first: _first;
   export const filter: _filter;
   export const concat: _concat;
+  export const unique: _unique;
   export const isEmpty: _isEmpty;
   export const forEach: _forEach;
   export const takeWhile: _takeWhile;

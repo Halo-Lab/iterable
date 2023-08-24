@@ -217,6 +217,20 @@ export function group(source, callback) {
     : (anotherSource) => group(anotherSource, source);
 }
 
+export function unique(source, callback = (item) => item) {
+  return isIterable(source)
+    ? from(function* () {
+        const cache = new Set();
+
+        for (const item of source) {
+          const key = callback(item);
+
+          cache.has(key) || (cache.add(key), yield item);
+        }
+      })
+    : (anotherSource) => unique(anotherSource, source);
+}
+
 export default {
   of,
   is: isIterable,
@@ -239,6 +253,7 @@ export default {
   chain,
   filter,
   concat,
+  unique,
   isEmpty,
   forEach,
   takeWhile,
