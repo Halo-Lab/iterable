@@ -4,19 +4,25 @@
   "author": "Kapelianovych Yevhen",
   "version": "0.0.1",
   "license": "ISC",
-  "description": "A lazy Iterable",
+  "description": "A lazy sync and async Iterables",
   "repository": {
     "url": "https://github.com/Halo-Lab/iterable",
     "type": "git"
   },
   "keywords": [
     "Iterable",
-    "Iterator"
+    "Iterator",
+    "AsyncIterable",
+    "AsyncIterator"
   ],
   "exports": {
     ".": {
       "types": "./index.d.ts",
       "default": "./index.js"
+    },
+    "./async": {
+      "types": "./async.d.ts",
+      "default": "./async.js"
     }
   },
   "files": [
@@ -24,6 +30,8 @@
     "README.md",
     "index.d.ts",
     "index.js",
+    "async.d.ts",
+    "async.js",
     "package.json"
   ],
   "scripts": {
