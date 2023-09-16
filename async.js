@@ -222,7 +222,7 @@ export function group(source, callback) {
           groups.set(key, concat(groups.get(key) ?? of(), of(value)));
         });
 
-        for await (const pair of groups) yield pair;
+        for (const pair of groups) yield pair;
       })
     : (anotherSource) => group(anotherSource, source);
 }
