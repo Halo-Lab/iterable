@@ -40,7 +40,7 @@ export function from(value) {
 
   if (typeof value === "function") return (value[Symbol.asyncIterator] = value);
 
-  value = Array.from(value);
+  Symbol.iterator in value || (value = Array.from(value));
 
   return from(async function* () {
     yield* value;

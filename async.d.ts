@@ -55,6 +55,7 @@ export function from<const A>(
   value:
     | (() => AsyncIterator<A, void, unknown>)
     | AsyncIterable<A>
+    | Iterable<A>
     | ArrayLike<A>,
 ): AsyncIterable<A>;
 
