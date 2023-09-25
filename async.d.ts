@@ -49,7 +49,7 @@ export function forEach<A>(
   callback: (value: A) => void,
 ): Promise<void>;
 
-export function of<T>(...values: readonly T[]): AsyncIterable<T>;
+export function of<T>(...values: readonly T[]): AsyncIterable<Awaited<T>>;
 
 export function from<const A>(
   value:
@@ -57,7 +57,7 @@ export function from<const A>(
     | AsyncIterable<A>
     | Iterable<A>
     | ArrayLike<A>,
-): AsyncIterable<A>;
+): AsyncIterable<Awaited<A>>;
 
 export function fold<A, B = A>(
   accumulator: B,
