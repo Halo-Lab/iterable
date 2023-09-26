@@ -38,12 +38,15 @@ export function of(...values) {
 export function from(value) {
   if (isAsyncIterable(value)) return value;
 
+  if (Symbol.iterator in value)
+    return from(async function* () {
+      yield* value;
+    });
+
   if (typeof value === "function") return (value[Symbol.asyncIterator] = value);
 
-  Symbol.iterator in value || (value = Array.from(value));
-
   return from(async function* () {
-    yield* value;
+    for (const key in value) key === "length" || (yield value[key]);
   });
 }
 

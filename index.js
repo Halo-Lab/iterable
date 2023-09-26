@@ -40,10 +40,8 @@ export function from(value) {
 
   if (typeof value === "function") return (value[Symbol.iterator] = value);
 
-  value = Array.from(value);
-
   return from(function* () {
-    yield* value;
+    for (const key in value) key === "length" || (yield value[key]);
   });
 }
 
