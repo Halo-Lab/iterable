@@ -46,7 +46,7 @@ export function from(value) {
   if (typeof value === "function") return (value[Symbol.asyncIterator] = value);
 
   return from(async function* () {
-    for (const key in value) key === "length" || (yield value[key]);
+    for (const key in value) Number.isNaN(+key) || (yield value[key]);
   });
 }
 
