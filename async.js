@@ -26,9 +26,12 @@ export function filter(source, predicate) {
     : (anotherSource) => filter(anotherSource, source);
 }
 
-export async function forEach(source, callback) {
-  if (callback) for await (const value of source) callback(value);
-  else return (anotherSource) => forEach(anotherSource, source);
+export function forEach(source, callback) {
+  return callback
+    ? (async () => {
+        for await (const value of source) callback(value);
+      })()
+    : (anotherSource) => forEach(anotherSource, source);
 }
 
 export function of(...values) {
@@ -50,13 +53,15 @@ export function from(value) {
   });
 }
 
-export async function fold(source, accumulator, reduce) {
-  if (arguments.length === 3) {
-    for await (const value of source)
-      accumulator = await reduce(accumulator, value);
+export function fold(source, accumulator, reduce) {
+  return arguments.length === 3
+    ? (async () => {
+        for await (const value of source)
+          accumulator = await reduce(accumulator, value);
 
-    return accumulator;
-  } else return (anotherSource) => fold(anotherSource, source, accumulator);
+        return accumulator;
+      })()
+    : (anotherSource) => fold(anotherSource, source, accumulator);
 }
 
 export function concat(source, other) {
@@ -68,20 +73,24 @@ export function concat(source, other) {
     : (anotherSource) => concat(anotherSource, source);
 }
 
-export async function all(source, predicate) {
-  if (predicate) {
-    for await (const item of source) if (!predicate(item)) return false;
+export function all(source, predicate) {
+  return predicate
+    ? (async () => {
+        for await (const item of source) if (!predicate(item)) return false;
 
-    return true;
-  } else return (anotherSource) => all(anotherSource, source);
+        return true;
+      })()
+    : (anotherSource) => all(anotherSource, source);
 }
 
-export async function any(source, predicate) {
-  if (predicate) {
-    for await (const item of source) if (predicate(item)) return true;
+export function any(source, predicate) {
+  return predicate
+    ? (async () => {
+        for await (const item of source) if (predicate(item)) return true;
 
-    return false;
-  } else return (anotherSource) => any(anotherSource, source);
+        return false;
+      })()
+    : (anotherSource) => any(anotherSource, source);
 }
 
 export function take(source, amount) {
@@ -208,10 +217,12 @@ export function unzip(source) {
   ];
 }
 
-export async function find(source, predicate) {
-  if (predicate) {
-    for await (const item of source) if (predicate(item)) return item;
-  } else return (anotherSource) => find(anotherSource, source);
+export function find(source, predicate) {
+  return predicate
+    ? (async () => {
+        for await (const item of source) if (predicate(item)) return item;
+      })()
+    : (anotherSource) => find(anotherSource, source);
 }
 
 export function group(source, callback) {
